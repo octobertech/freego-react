@@ -1,23 +1,19 @@
-import React, {useState, useEffect, useReducer} from 'react';
+import React, {useEffect, useReducer} from 'react';
 import './App.css';
-import Amplify, {API, Auth} from 'aws-amplify';
+import Amplify, {API} from 'aws-amplify';
 import { AmplifyAuthenticator, AmplifyAuthContainer, AmplifySignUp,
     AmplifyForgotPassword, AmplifySignIn, AmplifyConfirmSignUp}  from '@aws-amplify/ui-react';
 import {getUserByUsername, getBlog, getPost, getComment} from '../graphql/queries';
 import { createBlog as createBlogMutation, createPost as createPostMutation, createComment as createCommentMutation,
     updateBlog as updateBlogMutation, updatePost as updatePostMutation, updateComment as updateCommentMutation,
-    deleteBlog as deleteBlogMutation, deletePost as deletePostMutation, deleteComment as deleteCommentMutation,
     createUser as createUserMutation
 } from '../graphql/mutations';
 
 import {useHistory, useParams} from 'react-router-dom';
 
-import {
-    Container, Title, Main, Header, Spinner, InputContainer, AddButton, SetListContainer,
-    Input, EmptyListMessage, SetContainer, StyledModal, SpecialModalBackground, ErrorMessage, Footer, Button
+import { Spinner,  ErrorMessage, Button
 } from '../common/styled';
 import awsconfig from "../aws-exports";
-import {act} from "@testing-library/react";
 import {onAuthUIStateChange, Translations} from "@aws-amplify/ui-components";
 
 Translations.SIGN_IN_HEADER_TEXT = "Вход";
@@ -109,10 +105,8 @@ function FormContainer(props) {
             case 'blog':
                 if (parent !== 'undefined') {
                     initialFormState.blog.blogBlogId = parent;
-                    console.log('set blogBlogId to City to parent',parent, type, id, initialFormState.blog.blogBlogId)
                 } else {
                     initialFormState.blog.blogBlogId = 'City';
-                    console.log('set blogBlogId to City', initialFormState.blog.blogBlogId )
                 }
                 dispatch({type: types.SET_FORMDATA, value: initialFormState.blog});
                 if (id) {
@@ -123,7 +117,7 @@ function FormContainer(props) {
                 if (parent !== 'undefined') {
                     initialFormState.post.postBlogId = parent;
                 }
-                console.log('set post', parent, type, id, initialFormState.post)
+
                 dispatch({type: types.SET_FORMDATA, value: initialFormState.post});
                 if (id) {
                     fetchPost(id);
@@ -139,7 +133,6 @@ function FormContainer(props) {
                 }
                 break;
             default:
-                console.log('set default', parent, type, id, initialFormState.post)
                 dispatch({type: types.SET_FORMDATA, value: initialFormState.blog});
         }
 
@@ -157,7 +150,6 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISLOADING, value: true });
         dispatch({type: types.SET_ISERROR, value: false });
         const apiData = await API.graphql({ query: getBlog, variables: {id} });
-        console.log('blog data',apiData?.data?.getBlog )
         if (apiData?.data?.getBlog) {
             dispatch({type: types.SET_FORMDATA, value: {...state.formData, name: apiData?.data?.getBlog?.name, id: apiData?.data?.getBlog?.id } });
         } else {
@@ -169,7 +161,6 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: getPost, variables: {id} });
-        console.log('post data',apiData?.data?.getPost )
         if (apiData?.data?.getPost) {
             dispatch({type: types.SET_FORMDATA, value: {...state.formData, content: apiData?.data?.getPost?.content, id: apiData?.data?.getPost?.id } });
         } else {
@@ -181,7 +172,6 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: getComment, variables: {id} });
-        console.log('comment data',apiData?.data?.getComment )
         if (apiData?.data?.getComment) {
             dispatch({type: types.SET_FORMDATA, value: {...state.formData, content: apiData?.data?.getComment?.content, id: apiData?.data?.getComment?.id }});
         } else {
@@ -197,9 +187,7 @@ function FormContainer(props) {
         }
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
-        console.log('create blog form data', state.formData)
         const apiData = await API.graphql({ query: createBlogMutation, variables: {input: state.formData} });
-        console.log('create blog data', apiData?.data?.createBlog)
         if (apiData?.data?.createBlog) {
             await createUser(props.currentUser?.username);
             if (parent !== 'undefined') {
@@ -221,7 +209,6 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: createPostMutation, variables: {input: state.formData} });
-        console.log('create post data', apiData?.data?.createPost)
         if (apiData?.data?.createPost) {
             await createUser(props.currentUser?.username);
             history.push('/'+apiData?.data?.createPost?.postBlogId)
@@ -239,7 +226,6 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: createCommentMutation, variables: {input: state.formData} });
-        console.log('create comment data', apiData?.data?.createComment)
         if (apiData?.data?.createComment) {
             await createUser(props.currentUser?.username);
             history.push('/'+apiData?.data?.createComment?.post?.postBlogId)
@@ -255,7 +241,6 @@ function FormContainer(props) {
 
         } else {
             const apiData = await API.graphql({ query: createUserMutation, variables: {input: {username }} });
-            console.log('create user data', apiData?.data?.createUser)
         }
     }
 
@@ -267,7 +252,6 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: updateBlogMutation, variables: {input: state.formData} });
-        console.log('update blog data', apiData?.data?.updateBlog)
         if (apiData?.data?.updateBlog) {
             history.push('/'+apiData?.data?.updateBlog?.id)
         } else {
@@ -284,7 +268,6 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: updatePostMutation, variables: {input: state.formData} });
-        console.log('update post data', apiData?.data?.updatePost)
         if (apiData?.data?.updatePost) {
             history.push('/'+apiData?.data?.updatePost?.postBlogId)
         } else {
@@ -301,48 +284,10 @@ function FormContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: updateCommentMutation, variables: {input: state.formData} });
-        console.log('update comment data', apiData?.data?.updatePost)
         if (apiData?.data?.updateComment) {
             history.push('/'+apiData?.data?.updateComment?.post?.postBlogId)
         } else {
             dispatch({type: types.SET_ISERROR, value: 'Error when updating comment'});
-        }
-        dispatch({type: types.SET_ISLOADING, value: false });
-    }
-
-    async function deleteBlog(id) {
-        dispatch({type: types.SET_ISERROR, value: false });
-        dispatch({type: types.SET_ISLOADING, value: true });
-        const apiData = await API.graphql({ query: deleteBlogMutation, variables: {input: state.formData} });
-        console.log('delete blog data', apiData?.data?.deleteBlog)
-        if (apiData?.data?.deleteBlog) {
-            history.push('/');
-        } else {
-            dispatch({type: types.SET_ISERROR, value: 'Error when deleting blog'});
-        }
-        dispatch({type: types.SET_ISLOADING, value: false });
-    }
-    async function deletePost(id) {
-        dispatch({type: types.SET_ISERROR, value: false });
-        dispatch({type: types.SET_ISLOADING, value: true });
-        const apiData = await API.graphql({ query: deletePostMutation, variables: {input: state.formData} });
-        console.log('delete post data', apiData?.data?.deletePost)
-        if (apiData?.data?.deletePost) {
-            history.push('/'+apiData?.data?.deletePost?.postBlogId)
-        } else {
-            dispatch({type: types.SET_ISERROR, value: 'Error when deleting post'});
-        }
-        dispatch({type: types.SET_ISLOADING, value: false });
-    }
-    async function deleteComment(id) {
-        dispatch({type: types.SET_ISERROR, value: false });
-        dispatch({type: types.SET_ISLOADING, value: true });
-        const apiData = await API.graphql({ query: deleteCommentMutation, variables: {input: state.formData} });
-        console.log('delete comment data', apiData?.data?.deletePost)
-        if (apiData?.data?.deleteComment) {
-            history.push('/'+apiData?.data?.deleteComment?.post?.postBlogId)
-        } else {
-            dispatch({type: types.SET_ISERROR, value: 'Error when deleting comment'});
         }
         dispatch({type: types.SET_ISLOADING, value: false });
     }
@@ -434,8 +379,6 @@ function FormContainer(props) {
             <Spinner/>
         </div>)
     }
-
-    console.log('CURRENT USER', props.currentUser)
 
     if (type) {
         if (type === 'blog') {

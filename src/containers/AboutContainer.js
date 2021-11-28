@@ -1,27 +1,8 @@
-import React, { useState, useEffect, useReducer } from 'react';
-import { useParams, useHistory, Link } from 'react-router-dom';
+import React from 'react';
+
 import './App.css';
-import Amplify, { API, graphqlOperation, Auth, AuthModeStrategyType } from 'aws-amplify';
-//import '@aws-amplify/ui-react/styles.css';
-import {listBlogs, getBlog, blogsCities} from '../graphql/queries';
-
-import {
-    createBlog as createBlogMutation,
-    deleteBlog as deleteBlogMutation,
-    deleteComment as deleteCommentMutation, deletePost as deletePostMutation
-} from '../graphql/mutations';
-import {onCreateBlogByBlogId, onUpdateBlogByBlogId, onCreatePostByBlogId, onUpdatePostByBlogId,
-    onCreateCommentByPostId, onUpdateCommentByPostId} from "../graphql/subscriptions";
-import {
-    Container, Button, SmallButton, Title, Main, Header, Spinner, InputContainer, AddButton, SetListContainer,
-    Input, EmptyListMessage, SetContainer, StyledModal, SpecialModalBackground, ErrorMessage, Footer
-} from '../common/styled';
-import awsconfig from "../../src/aws-exports";
-
 
 function AboutContainer(props) {
-
-    let history = useHistory();
 
     return (
         <div>

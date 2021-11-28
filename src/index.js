@@ -7,20 +7,6 @@ import GlobalStyles from './common/globalstyle'
 import {BrowserRouter} from "react-router-dom";
 import Amplify, {AuthModeStrategyType} from "aws-amplify";
 import awsconfig from "../src/aws-exports";
-import { I18n } from "aws-amplify";
-import { Translations } from "@aws-amplify/ui-components";
-
-I18n.putVocabulariesForLanguage("en-US", {
-    [Translations.SIGN_IN_HEADER_TEXT]: "Login",
-    [Translations.SIGN_IN_ACTION]: "Log into"
-});
-
-I18n.putVocabulariesForLanguage("ru-RU", {
-    [Translations.SIGN_IN_HEADER_TEXT]: "Входи",
-    [Translations.SIGN_IN_ACTION]: "Войти",
-    [Translations.FORGOT_PASSWORD_TEXT]: "Забыли пароль?"
-
-});
 
 Amplify.configure({
     ...awsconfig,

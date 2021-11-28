@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { API, Auth } from 'aws-amplify';
-import {BrowserRouter, Route, Switch, useHistory, Link} from 'react-router-dom';
+import { Auth } from 'aws-amplify';
+import { Route, Switch, useHistory} from 'react-router-dom';
 import BlogsContainer from './BlogsContainer';
 import FormContainer from "./FormContainer";
 import UserContainer from "./UserContainer";
 import AboutContainer from "./AboutContainer";
 
 import {
-    Container, NavButton, Title, Main, Header, Spinner, InputContainer, AddButton, SetListContainer,
-    Input, EmptyListMessage, SetContainer, StyledModal, SpecialModalBackground, ErrorMessage, Footer, LogoText, LogoDesc
+    Container, NavButton, Main, Header, Footer, LogoText, LogoDesc
 } from '../common/styled';
 
 
@@ -27,7 +26,6 @@ function App() {
         if (!currentUser) {
             (async () => {
                 const user = await Auth.currentAuthenticatedUser();
-                console.log('user', user)
                 if (user?.username) {
                     setCurrentUser(user);
                 }

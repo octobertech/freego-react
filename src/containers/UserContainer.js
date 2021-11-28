@@ -9,16 +9,12 @@ import {
 } from '@aws-amplify/ui-react';
 import {getUserByUsername} from '../graphql/queries';
 
-import {BrowserRouter, Route, Switch, useHistory, useParams} from 'react-router-dom';
-import BlogsContainer from './BlogsContainer';
+import { useHistory, useParams} from 'react-router-dom';
 import { createUser as createUserMutation, updateUser as updateUserMutation
 } from '../graphql/mutations';
-import {
-    Container, Button, Title, Main, Header, Spinner, InputContainer, AddButton, SetListContainer,
-    Input, EmptyListMessage, SetContainer, StyledModal, SpecialModalBackground, ErrorMessage, Footer
+import { Button,Spinner,
 } from '../common/styled';
-import awsconfig from "../aws-exports";
-import {AuthState, onAuthUIStateChange, Translations} from "@aws-amplify/ui-components";
+import {onAuthUIStateChange, Translations} from "@aws-amplify/ui-components";
 
 Translations.SIGN_IN_HEADER_TEXT = "Вход";
 Translations.FORGOT_PASSWORD_TEXT = "Забыли пароль?";
@@ -92,8 +88,6 @@ const initialState = {
 function UserContainer(props) {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { id } = useParams();
-    let history = useHistory();
-    console.log('currentUser', props.currentUser)
 
     useEffect(() => {
         if (props.currentUser?.signInUserSession) {
@@ -137,11 +131,9 @@ function UserContainer(props) {
 
     async function createUserDynamo(username) {
         const apiData = await API.graphql({ query: createUserMutation, variables: {input: {username }} });
-        console.log('create user data', apiData?.data?.createUser)
     }
     async function updateUserDynamo() {
         const apiData = await API.graphql({ query: updateUserMutation, variables: {input: state.userDynamo} });
-        console.log('create user data', apiData?.data?.updateUser)
     }
 
     async function updateUserCognito() {

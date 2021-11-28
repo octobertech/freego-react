@@ -1,24 +1,18 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import './App.css';
-import Amplify, { API, graphqlOperation, Auth, AuthModeStrategyType } from 'aws-amplify';
-//import '@aws-amplify/ui-react/styles.css';
-import {listBlogs, getBlog, blogsCities} from '../graphql/queries';
+import Amplify, { API } from 'aws-amplify';
+
+import {getBlog, blogsCities} from '../graphql/queries';
 
 import {
-    createBlog as createBlogMutation,
-    deleteBlog as deleteBlogMutation,
     deleteComment as deleteCommentMutation, deletePost as deletePostMutation
 } from '../graphql/mutations';
 import {onCreateBlogByBlogId, onUpdateBlogByBlogId, onCreatePostByBlogId, onUpdatePostByBlogId,
     onCreateCommentByPostId, onUpdateCommentByPostId} from "../graphql/subscriptions";
-import {
-    Container, Button, SmallButton, Title, Main, Header, Spinner, InputContainer, AddButton, SetListContainer,
-    Input, EmptyListMessage, SetContainer, StyledModal, SpecialModalBackground, ErrorMessage, Footer
+import { Button, SmallButton, Spinner, ErrorMessage
 } from '../common/styled';
 import awsconfig from "../../src/aws-exports";
-
-const initialFormState = { name: '', status: 'draft', blogBlogId: ''}
 
 const types = {
     SET_BLOGS: 'SET_BLOGS',
@@ -101,7 +95,7 @@ const initialState = {
 function BlogsContainer(props) {
     const [state, dispatch] = useReducer(reducer, initialState)
     let history = useHistory();
-    const { parent, type, id } = useParams();
+    const { id } = useParams();
     // check if logged in and setup auth type
     if (props.currentUser?.signInUserSession) {
         awsconfig.aws_appsync_authenticationType = "AMAZON_COGNITO_USER_POOLS";
@@ -118,7 +112,6 @@ function BlogsContainer(props) {
     useEffect(() => {
         (() => {
             const user = props.currentUser;
-            console.log('user', user)
             if (user?.username) {
                 dispatch({type: types.SET_CURRENTUSERNAME, value: user?.username });
                 dispatch({type: types.SET_CURRENTUSERGROUPS, value: user?.signInUserSession?.accessToken?.payload["cognito:groups"] });
@@ -245,10 +238,7 @@ function BlogsContainer(props) {
     }
 
     const fetchBlogCore = async (id) => {
-        //if (!state.isMounted) return;
         const apiData = await API.graphql({ query: getBlog, variables: {id} }); // {id: 'f745b2c0-7187-45d6-b67d-5cf7157f862d'} });
-        console.log('getblogs', apiData?.data?.getBlog)
-        //if (!state.isMounted) return;
         if (apiData?.data?.getBlog) {
             dispatch({type: types.SET_BLOG, value: apiData?.data?.getBlog});
             dispatch({type: types.SET_BLOGS, value: apiData?.data?.getBlog?.blogs?.items});
@@ -262,7 +252,6 @@ function BlogsContainer(props) {
     async function fetchBlog(id, onCreateCommentSubscription, onUpdateCommentSubscription) {
         dispatch({type: types.SET_ISLOADING, value: true });
         dispatch({type: types.SET_ISERROR, value: false });
-        console.log('id', id);
         if (id) {
             await fetchBlogCore(id) //.then(() => {
             //     state.posts.map(post => {
@@ -317,8 +306,6 @@ function BlogsContainer(props) {
                 history.push("/"+props.currentCity?.id);
             } else {
                 const apiData = await API.graphql({ query: blogsCities, variables: {blogBlogId: 'City'} }); // {id: 'f745b2c0-7187-45d6-b67d-5cf7157f862d'} });
-                console.log('getcities', apiData?.data?.blogsCities)
-
                 if (apiData?.data?.blogsCities) {
                     dispatch({type: types.SET_BLOGS, value: apiData?.data?.blogsCities?.items})
                 } else {
@@ -334,12 +321,9 @@ function BlogsContainer(props) {
         dispatch({type: types.SET_ISERROR, value: false });
         dispatch({type: types.SET_ISLOADING, value: true });
         const apiData = await API.graphql({ query: deletePostMutation, variables: {input: {id}} });
-        console.log('delete post data', apiData?.data?.deletePost)
         if (apiData?.data?.deletePost) {
-            console.log('posts1', state.posts)
             const newPosts = state.posts.filter(post => post.id !== id);
             dispatch({type: types.SET_POSTS, value: [...newPosts]})
-            console.log('posts2', state.posts, newPosts)
         } else {
             dispatch({type: types.SET_ISERROR, value: 'Ошибка при удалении поста'});
         }
@@ -350,7 +334,6 @@ function BlogsContainer(props) {
         dispatch({type: types.SET_ISLOADING, value: true });
         dispatch({type: types.SET_ISERROR, value: false });
         const apiData = await API.graphql({ query: deleteCommentMutation, variables: {input: {id}} });
-        console.log('delete comment data', apiData?.data?.deleteComment)
         if (apiData?.data?.deleteComment) {
             const newPosts = state.posts.map(post => {
                 const newComms = post.comments.items.filter(comm => comm.id !== id);

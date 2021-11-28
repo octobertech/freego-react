@@ -35,60 +35,9 @@ export const Footer = styled.footer`
     padding: 10px;
     
 `
-export const SetContainer = styled.form`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-  max-width: 500px;
-  min-width: 360px;
-`
 
-export const Title = styled.h1`
-  color: var(--text-color);
-  margin-bottom: 3.2rem;
-  text-align: center;
-`
 
-export const InputContainer = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  overflow: auto;
-  height: calc(100vh - 150px);
-  width: 80%;
-  padding-bottom: 70px;
-  -webkit-backface-visibility: hidden;
- -moz-backface-visibility: hidden;
- -webkit-transform: translate3d(0, 0, 0);
- -moz-transform: translate3d(0, 0, 0);
- 
-`
 
-export const DayInput = styled.div`
-  display: flex;
-  flex-flow: row nowrap;
-  margin: 10px 0;
-  font-size: 18px;
-  justify-content: space-between;
-  align-items: center;
-`
-
-export const Input = styled.input`
-  display: flex;
-  margin: 8px 0;
-  padding: 1.6rem;
-  background: var(--background-color);
-  border: none;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  border-radius: 5px;
-  transition: all .2s ease-in-out;
-  outline: none;
-  &:focus {
-    background: rgba(255,255,255,0.1);
-    border: 2px solid rgba(255, 255, 255, 0.8);
-  }
-`
 export const Select = styled.select`
 background-color: hsl(0, 0%, 100%);
     border-color: hsl(0, 0%, 80%);
@@ -111,32 +60,6 @@ background-color: hsl(0, 0%, 100%);
   }
 `;
 
-export const Label = styled.label`
-    margin-top: 0.3em;
-	margin-bottom: 0;
-	color: var(--text-color);
-`;
-
-export const AddButton = styled.button`
-  padding: 1.6rem 2.4rem;
-  background: var(--accent-color);
-  transition: background .2s ease-in-out;
-  outline: none;
-  border: none;
-  border-radius: 5px;
-  margin: 1.2rem 0 0.8rem 0;
-  width: 100%;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1.8rem;
-  &:hover, &:active{
-    background: var(--accent-color-active);
-  }
-  &:disabled {
-    color: #000;
-    background: #999;
-  }
-`
 
 export const Button = styled.button`
     appearance: button;
@@ -216,17 +139,7 @@ export const SmallButton = styled.button`
 `
 
 
-export const SetListContainer = styled.div`
-  background: var(--list-container-background);
-  padding: 3.2rem;
-  border-radius: 5px;
-  width: 100%;
-`
 
-export const EmptyListMessage = styled.div`
-  color: #333;
-  text-align: center;
-`
 const rotate360 = keyframes`
   from {
     transform: rotate(0deg);
@@ -256,11 +169,10 @@ export const Spinner = styled.div`
   border-radius: 50%;
 `;
 
-export const TopNav = styled.d
 
 export const LogoText = styled.a`
     font-family: "Roboto", sans-serif !important;
-    font-size: 2.7rem !important;
+    font-size: 2.5rem !important;
     background: var(--accent-color) !important;
     color: #FFFFFF !important;
     padding: 0.5rem 1rem 0.5rem 1rem !important;

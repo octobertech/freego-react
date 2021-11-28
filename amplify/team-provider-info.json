@@ -19,7 +19,8 @@
         }
       },
       "auth": {
-        "freegoreact26705d96": {}
+        "freegoreact26705d96": {},
+        "userPoolGroups": {}
       },
       "hosting": {
         "amplifyhosting": {

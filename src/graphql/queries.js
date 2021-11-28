@@ -243,7 +243,6 @@ export const getPost = /* GraphQL */ `
       updatedAt
       public
       isReport
-      reportData
       blog {
         id
         name
@@ -327,7 +326,6 @@ export const listPosts = /* GraphQL */ `
         updatedAt
         public
         isReport
-        reportData
         blog {
           id
           name
@@ -434,7 +432,6 @@ export const listComments = /* GraphQL */ `
           updatedAt
           public
           isReport
-          reportData
         }
         owner
         editors {
