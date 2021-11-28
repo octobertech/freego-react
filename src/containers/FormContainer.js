@@ -236,9 +236,8 @@ function FormContainer(props) {
     }
     // check if user created in Dynamodb if not create
     async function createUser(username) {
-        const checkUser = API.graphql({ query: getUserByUsername, variables: {username}})
+        const checkUser = await API.graphql({ query: getUserByUsername, variables: {username}})
         if (checkUser?.data?.getUserByUsername?.items?.length) {
-
         } else {
             const apiData = await API.graphql({ query: createUserMutation, variables: {input: {username }} });
         }
