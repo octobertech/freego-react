@@ -1,0 +1,21 @@
+{
+    "appName": "freegoreactpinpoint",
+    "roleName": "pinpointLambdaRole7198d06c",
+    "cloudformationPolicyName": "cloudformationPolicy7198d06c",
+    "cloudWatchPolicyName": "cloudWatchPolicy7198d06c",
+    "pinpointPolicyName": "pinpointPolicy7198d06c",
+    "authPolicyName": "pinpoint_amplify_7198d06c",
+    "unauthPolicyName": "pinpoint_amplify_7198d06c",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}

@@ -1,0 +1,253 @@
+enum Status {
+  draft
+  published
+  hidden
+}
+
+type Blog @model @key(name: "blogsCities", fields: ["blogBlogId"], queryField: "blogsCities")
+@auth(rules: [
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [update] },
+  { allow: owner, operations: [create, update]},
+  { allow: owner, ownerField: "editors", operations: [update] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }
+])
+{
+  id: ID!
+  name: String!
+  slug: String
+  meta: String
+  status: Status
+  owner: String
+  posts: [Post] @connection(name: "SortedPosts", sortField: "createdAt")
+  blogBlogId: ID
+  blog: Blog @connection(name: "SortedBlogs")
+  blogs: [Blog] @connection(name: "SortedBlogs", sortField: "updatedAt")
+  editors: [BlogEditor] @connection(keyName: "byBlog", fields: ["id"])
+  tags: [TagBlog] @connection(keyName: "byBlog", fields: ["id"])
+  createdAt: String
+  updatedAt: String
+  public: Boolean
+  views: Int
+}
+
+type BlogConnection {
+  blogs: [Blog]
+  nextToken: String
+}
+
+type Post @model # @key(name: "byBlog", fields: ["blogID", "createdAt"], queryField: "postsByDate")
+@auth(rules: [
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [update] },
+  { allow: owner, operations: [create, update, delete]},
+  { allow: owner, ownerField: "editors", operations: [update] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }])
+{
+  id: ID!
+  content: String!
+  status: Status
+  owner: String
+  group: String
+  postBlogId: ID
+  blog: Blog @connection(name: "SortedPosts")
+  comments: [Comment] @connection(name: "SortedComments", sortField: "createdAt")
+  editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+  createdAt: String
+  updatedAt: String
+  public: Boolean
+  isReport: Boolean
+  reportData: String @auth(rules: [
+    { allow: groups, groups: ["admins"], operations: [read, create, update, delete] },
+    { allow: groups, groups: ["managers"], operations: [read, create, update, delete] },
+    { allow: groups, groups: ["moderators"], operations: [read] }
+  ])
+}
+
+type PostConnection {
+  posts: [Post]
+  nextToken: String
+}
+
+type Comment @model #@key(name: "byPost", fields: ["postID", "createdAt"], queryField: "commentsByDate")
+@auth(rules: [
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [update] },
+  { allow: owner, operations: [create, update, delete]},
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }])
+{
+  id: ID!
+  commentPostId: ID
+  post: Post @connection(name: "SortedComments")
+  editors: [CommentEditor] @connection(keyName: "byComment", fields: ["id"])
+  content: String!
+  status: Status
+  createdAt: String
+  updatedAt: String
+  public: Boolean
+}
+
+type CommentConnection {
+  comments: [Post]
+  nextToken: String
+}
+
+type User @model @key(name: "byUsername", fields: ["username"], queryField: "getUserByUsername")
+@auth(rules: [
+  { allow: owner, operations: [create, update]},
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }])
+{
+  id: ID!
+  username: ID!
+  name: String
+  bio: String
+  city: String
+  posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+  blogs: [BlogEditor] @connection(keyName: "byEditor", fields: ["id"])
+  comments: [CommentEditor] @connection(keyName: "byEditor", fields: ["id"])
+  public: Boolean
+}
+
+type UserConnection {
+  users: [User]
+  nextToken: String
+}
+
+type PostEditor
+  @model(queries: null, subscriptions: null)
+  @auth(rules: [
+  { allow: owner},
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+    { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [update] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }
+  ])
+  @key(name: "byPost", fields: ["postID", "editorID"])
+  @key(name: "byEditor", fields: ["editorID", "postID"]) {
+  id: ID!
+  postID: ID!
+  editorID: ID!
+  post: Post! @connection(fields: ["postID"])
+  editor: User! @connection(fields: ["editorID"])
+}
+
+type BlogEditor
+  @model(queries: null, subscriptions: null)
+  @auth(rules: [
+  { allow: owner},
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [update] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }
+  ])
+  @key(name: "byBlog", fields: ["blogID", "editorID"])
+  @key(name: "byEditor", fields: ["editorID", "blogID"]) {
+  id: ID!
+  blogID: ID!
+  editorID: ID!
+  blog: Blog! @connection(fields: ["blogID"])
+  editor: User! @connection(fields: ["editorID"])
+}
+
+type CommentEditor
+@model(queries: null, subscriptions: null)
+@auth(rules: [
+  { allow: owner},
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [update] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }
+])
+@key(name: "byComment", fields: ["commentID", "editorID"])
+@key(name: "byEditor", fields: ["editorID", "commentID"]) {
+  id: ID!
+  commentID: ID!
+  editorID: ID!
+  comment: Comment! @connection(fields: ["commentID"])
+  editor: User! @connection(fields: ["editorID"])
+}
+
+type Tag @model
+@auth(rules: [
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [create, update, delete] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [create, read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }])
+{
+  id: ID!
+  name: String!
+  slug: String
+  meta: String
+  blogs: [TagBlog] @connection(keyName: "byTag", fields: ["id"])
+  public: Boolean
+}
+
+type TagBlog
+  @model(queries: null, subscriptions: null)
+  @auth(rules: [
+  { allow: owner},
+  { allow: groups, groups: ["admins"], operations: [create, update, delete] },
+  { allow: groups, groups: ["managers"], operations: [create, update, delete] },
+  { allow: groups, groups: ["moderators"], operations: [update] },
+  # allow all authenticated users to read tracks
+  { allow: private, operations: [read] },
+  # allow all guest users (not authenticated) to read tracks
+  { allow: public, operations: [read], provider: apiKey }
+  ])
+  @key(name: "byBlog", fields: ["blogID", "tagID"])
+  @key(name: "byTag", fields: ["tagID", "blogID"]) {
+  id: ID!
+  blogID: ID!
+  tagID: ID!
+  blog: Blog! @connection(fields: ["blogID"])
+  tag: Tag! @connection(fields: ["tagID"])
+}
+
+type Subscription {
+  onCreateBlogByBlogId(blogBlogId: ID!): Blog
+  @aws_subscribe(mutations: ["createBlog"])
+
+  onUpdateBlogByBlogId(blogBlogId: ID!): Blog
+  @aws_subscribe(mutations: ["updateBlog"])
+
+  onCreatePostByBlogId(postBlogId: ID!): Post
+  @aws_subscribe(mutations: ["createPost"])
+
+  onUpdatePostByBlogId(postBlogId: ID!): Post
+  @aws_subscribe(mutations: ["updatePost"])
+
+  onCreateCommentByPostId(commentPostId: ID!): Comment
+  @aws_subscribe(mutations: ["createComment"])
+
+  onUpdateCommentByPostId(commentPostId: ID!): Comment
+  @aws_subscribe(mutations: ["updateComment"])
+}

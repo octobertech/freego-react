@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "freegoreact",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authfreegoreact26705d96",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

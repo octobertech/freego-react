@@ -1,0 +1,45 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './containers/App';
+import reportWebVitals from './reportWebVitals';
+import GlobalStyles from './common/globalstyle'
+import {BrowserRouter} from "react-router-dom";
+import Amplify, {AuthModeStrategyType} from "aws-amplify";
+import awsconfig from "../src/aws-exports";
+import { I18n } from "aws-amplify";
+import { Translations } from "@aws-amplify/ui-components";
+
+I18n.putVocabulariesForLanguage("en-US", {
+    [Translations.SIGN_IN_HEADER_TEXT]: "Login",
+    [Translations.SIGN_IN_ACTION]: "Log into"
+});
+
+I18n.putVocabulariesForLanguage("ru-RU", {
+    [Translations.SIGN_IN_HEADER_TEXT]: "Входи",
+    [Translations.SIGN_IN_ACTION]: "Войти",
+    [Translations.FORGOT_PASSWORD_TEXT]: "Забыли пароль?"
+
+});
+
+Amplify.configure({
+    ...awsconfig,
+    DataStore: {
+        authModeStrategyType: AuthModeStrategyType.MULTI_AUTH
+    }
+});
+
+ReactDOM.render(
+    <React.StrictMode>
+        <GlobalStyles/>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </React.StrictMode>,
+    document.getElementById('root')
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
