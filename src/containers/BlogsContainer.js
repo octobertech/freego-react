@@ -401,7 +401,8 @@ function BlogsContainer(props) {
                             }
                         </div>
                         :
-                        <h1 onClick={() => chooseCity(blog)}>{blog?.name}</h1>
+                        <h1 style={{textDecoration: "underline",
+                            textDecorationColor: "#8f2e56"}} onClick={() => chooseCity(blog)}>{blog?.name}</h1>
                     }
                 </div>)
                 }
