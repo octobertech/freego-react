@@ -75,7 +75,7 @@ export const Button = styled.button`
   margin: 0.8rem 0 0.8rem 0;
   cursor: pointer;
   font-weight: bold;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #FFFFFF;
   &:hover, &:active{
     background: var(--accent-color);
