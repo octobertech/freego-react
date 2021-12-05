@@ -388,6 +388,13 @@ function BlogsContainer(props) {
                 <br />
             </div> : '' }
 
+            { id ? '' :
+                <div>
+                   <p style={{fontSize: '14px'}}>Выберите город:</p>
+                   <br/>
+                </div>
+            }
+
             { state.blogs?.map( (blog, index) => {
                 if (blog?.status === 'published' || state.currentUserGroups?.includes('admins') || state.currentUserGroups?.includes('managers') || state.currentUserGroups?.includes('moderators')) { return (<div key={index} style={{marginBottom: '5px'}}>
                     {id ?
@@ -402,8 +409,6 @@ function BlogsContainer(props) {
                         </div>
                         :
                         <div>
-                            <p style={{fontSize: '14px'}}>Выберите город:</p>
-                            <br/>
                             <h2 style={{textDecoration: "underline",
                                 textDecorationColor: "#8f2e56"}} onClick={() => chooseCity(blog)}>{blog?.name}</h2>
                         </div>
